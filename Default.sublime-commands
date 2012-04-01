@@ -1,0 +1,11 @@
+[
+    // PLIST/JSON conversion
+    {
+        "caption": "Plist Json Converter: JSON to PLIST",
+        "command": "json_to_plist"
+    },
+    {
+        "caption": "Plist Json Converter: PLIST to JSON",
+        "command": "plist_to_json"
+    }
+]
