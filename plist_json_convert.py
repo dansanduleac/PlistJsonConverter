@@ -9,8 +9,10 @@ import sublime_plugin
 import json
 import StringIO
 import sys
-from os.path import join
+import re
+from os.path import join, exists, splitext, basename
 from plistlib import readPlist, writePlistToString
+import codecs
 
 lib = join(sublime.packages_path(), 'PlistJsonConverter')
 if not lib in sys.path:
@@ -21,7 +23,9 @@ ERRORS = {
     "view2plist": "Could not read view buffer as PLIST!\nPlease see console for more info.",
     "plist2json": "Could not convert PLIST to JSON!\nPlease see console for more info.",
     "view2json": "Could not read view buffer as JSON!\nPlease see console for more info.",
-    "json2plist": "Could not convert JSON to PLIST!\nPlease see console for more info."
+    "json2plist": "Could not convert JSON to PLIST!\nPlease see console for more info.",
+    "filewrite": "Could not write file!\nPlease see console for more info.",
+    "bufferwrite": "Could not write view buffer!\nPlease see console for more info."
 }
 
 
@@ -38,8 +42,68 @@ class LanguageConverter(sublime_plugin.TextCommand):
     settings = None
 
     def __set_syntax(self):
-        syntax = sublime.load_settings(self.settings).get(self.lang, self.default_lang) if self.lang != None else self.default_lang
-        self.view.set_syntax_file(syntax)
+        if self.output_view != None:
+            # Get syntax language and set it
+            syntax = sublime.load_settings(self.settings).get(self.lang, self.default_lang) if self.lang != None else self.default_lang
+            self.output_view.set_syntax_file(syntax)
+
+    def __write_file(self, edit):
+        errors = False
+        # Get current view's filename
+        filename = self.view.file_name()
+        save_filename = self.get_output_file(filename) if filename != None and exists(filename) else None
+
+        if save_filename != None:
+            # Save content to UTF file
+            try:
+                with codecs.open(save_filename, "w", "utf-8") as f:
+                    f.write(self.output)
+                self.output_view = self.view.window().open_file(save_filename)
+            except Exception, e:
+                errors = True
+                error_msg(ERRORS["filewrite"], e)
+            if not errors:
+                self.__set_syntax()
+        else:
+            # Could not acquire a name that exists on disk
+            # Fallback to buffer write
+            self.__write_buffer(edit, force_new_buffer=True)
+
+    def __write_buffer(self, edit, force_new_buffer=False):
+        errors = False
+        new_buffer = bool(sublime.load_settings(self.settings).get("open_in_new_buffer", False))
+
+        # Save content to view buffer
+        try:
+            self.output_view = self.view.window().new_file() if new_buffer or force_new_buffer else self.view
+            self.output_view.replace(
+                edit,
+                sublime.Region(0, self.view.size()),
+                self.output
+            )
+        except Exception, e:
+            errors = True
+            error_msg(ERRORS["bufferwrite"], e)
+
+        if not errors:
+            if new_buffer or force_new_buffer:
+                # If a name can be acquired from the original view, give buffer a modified derivative of the name
+                filename = self.view.file_name()
+                buffer_name = basename(self.get_output_file(filename)) if filename != None else None
+                if buffer_name != None:
+                    self.output_view.set_name(buffer_name)
+            self.__set_syntax()
+
+    def is_enabled(self, save_to_file=False):
+        enabled = True
+        if save_to_file and not bool(sublime.load_settings(self.settings).get("enable_save_to_file_commands", False)):
+            enabled = False
+        elif not save_to_file and not bool(sublime.load_settings(self.settings).get("enable_show_in_buffer_commands", False)):
+            enabled = False
+        return enabled
+
+    def get_output_file(self, filename):
+        return self.view
 
     def read_buffer(self):
         return False
@@ -47,16 +111,35 @@ class LanguageConverter(sublime_plugin.TextCommand):
     def convert(self, edit):
         return False
 
-    def run(self, edit):
+    def run(self, edit, save_to_file=False):
         if not self.read_buffer():
             if not self.convert(edit):
-                self.__set_syntax()
+                if save_to_file:
+                    self.__write_file(edit)
+                else:
+                    self.__write_buffer(edit)
 
 
 class PlistToJsonCommand(LanguageConverter):
     lang = "json_language"
     default_lang = "Packages/Javascript/JSON.tmLanguage"
     settings = "plist_json_convert.sublime-settings"
+
+    def get_output_file(self, filename):
+        name = None
+
+        # Try and find file ext in the ext table
+        ext_tbl = sublime.load_settings(self.settings).get("conversion_ext", [])
+        for ext in ext_tbl:
+            m = re.match("(.*)\\." + ext["plist"], filename, re.IGNORECASE)
+            if m != None:
+                name = m.group(1) + "." + ext["json"]
+                break
+
+        # Could not find ext in table, replace current extension with default
+        if name == None:
+            name = splitext(filename)[0] + ".JSON"
+        return name
 
     def read_buffer(self):
         errors = False
@@ -81,12 +164,7 @@ class PlistToJsonCommand(LanguageConverter):
         try:
             if not errors:
                 # Convert Python dict to JSON buffer.
-                # Replace view with JSON buffer
-                self.view.replace(
-                    edit,
-                    sublime.Region(0, self.view.size()),
-                    json.dumps(self.plist, sort_keys=True, indent=4, separators=(',', ': ')).decode('raw_unicode_escape')
-                )
+                self.output = json.dumps(self.plist, sort_keys=True, indent=4, separators=(',', ': ')).decode('raw_unicode_escape')
         except Exception, e:
             errors = True
             error_msg(ERRORS["plist2json"], e)
@@ -97,6 +175,22 @@ class JsonToPlistCommand(LanguageConverter):
     lang = "plist_language"
     default_lang = "Packages/XML/XML.tmLanguage"
     settings = "plist_json_convert.sublime-settings"
+
+    def get_output_file(self, filename):
+        name = None
+
+        # Try and find file ext in the ext table
+        ext_tbl = sublime.load_settings(self.settings).get("conversion_ext", [])
+        for ext in ext_tbl:
+            m = re.match("(.*)\\." + ext["json"], filename, re.IGNORECASE)
+            if m != None:
+                name = m.group(1) + "." + ext["plist"]
+                break
+
+        # Could not find ext in table, replace current extension with default
+        if name == None:
+            name = splitext(filename)[0] + ".plist"
+        return name
 
     def read_buffer(self):
         errors = False
@@ -121,13 +215,8 @@ class JsonToPlistCommand(LanguageConverter):
     def convert(self, edit):
         errors = False
         try:
-            # Convert Python dict to PLIST
-            # Replace view buffer with PLIST buffer
-            self.view.replace(
-                edit,
-                sublime.Region(0, self.view.size()),
-                writePlistToString(self.json).decode('utf8')
-            )
+            # Convert Python dict to PLIST buffer
+            self.output = writePlistToString(self.json).decode('utf8')
         except Exception, e:
             errors = True
             error_msg(ERRORS["json2plist"], e)

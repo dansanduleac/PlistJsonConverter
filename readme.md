@@ -10,6 +10,31 @@ Command that converts an open JSON file to PLIST.  It will strip C style comment
 ## Plist Json Converter: PLIST to JSON
 Command that converts an open PLIST file to JSON.
 
+## Plist Json Converter: Save JSON to PLIST
+Command that converts an open JSON file to PLIST and saves it to a plist file.  File name is determined by the ```conversion_ext``` setting.  It will strip C style comments and also try and catch forgotten trailing commas.  If the file to convert does not exist on disk, the converted file will not initially either, but it will only be shown in the view buffer until saved manually.
+
+## Plist Json Converter: Save PLIST to JSON
+Command that converts an open PLIST file to JSON and saves it to a json file.  File name is determined by the ```conversion_ext``` setting.  If the file to convert does not exist on disk, the converted file will not initially either, but it will only be shown in the view buffer until saved manually.
+
+# Settings
+## enable_save_to_file_commands
+Allows the disabling of the "save to file" commands in the command palette
+
+## enable_show_in_buffer_commands
+Allows the disabling of the "show conversion if view buffer" commands in the command palette
+
+## open_in_new_buffer
+When a "show conversion in view buffer" command is executed, this will force the conversion to show up in its own new view buffer.
+
+## conversion_ext
+Allows you to provide a mapping from any plist extension to a choosen  json extension and vice versa.  They are evaluated in the order they appear.
+
+## json_language
+Allows the selection of a given ST2 language file to be used for the converted buffer or file.
+
+## plist_language
+Allows the selection of a given ST2 language file to be used for the converted buffer or file.
+
 # License
 
 Plist Json Converter is released under the MIT license.
@@ -21,6 +46,11 @@ Permission is hereby granted, free of charge, to any person obtaining a copy of 
 The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+# Version 0.2.0
+- Add commands to save converted file with specified extension
+- For buffer conversion, add setting to open in new buffer
+- Allow the turning off of save commands and/or buffer commands
 
 # Version 0.1.0
 - First release
