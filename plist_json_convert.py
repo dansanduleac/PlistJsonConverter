@@ -131,7 +131,7 @@ class PlistToJsonCommand(LanguageConverter):
         # Try and find file ext in the ext table
         ext_tbl = sublime.load_settings(self.settings).get("conversion_ext", [])
         for ext in ext_tbl:
-            m = re.match("(.*)\\." + ext["plist"], filename, re.IGNORECASE)
+            m = re.match("^(.*)\\." + ext["plist"] + "$", filename, re.IGNORECASE)
             if m != None:
                 name = m.group(1) + "." + ext["json"]
                 break
@@ -182,7 +182,7 @@ class JsonToPlistCommand(LanguageConverter):
         # Try and find file ext in the ext table
         ext_tbl = sublime.load_settings(self.settings).get("conversion_ext", [])
         for ext in ext_tbl:
-            m = re.match("(.*)\\." + ext["json"], filename, re.IGNORECASE)
+            m = re.match("^(.*)\\." + ext["json"] + "$", filename, re.IGNORECASE)
             if m != None:
                 name = m.group(1) + "." + ext["plist"]
                 break
