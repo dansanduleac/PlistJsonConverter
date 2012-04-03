@@ -35,6 +35,15 @@ Allows the selection of a given ST2 language file to be used for the converted b
 ## plist_language
 Allows the selection of a given ST2 language file to be used for the converted buffer or file.
 
+# Linux Issues
+I have provided a fix for Ubuntu.  Ubuntu requires a full install of Python2.6, but it only comes with a minimal install by default.  You can enter the command below in your linux terminal to get the full install.
+
+```sudo apt-get install python2.6```
+
+I have provided the Python lib path in the settings file so it may be adapted for other distros in needed.
+
+```"linux_python2.6_lib": "/usr/lib/python2.6/lib-dynload"```
+
 # License
 
 Plist Json Converter is released under the MIT license.
@@ -46,6 +55,10 @@ Permission is hereby granted, free of charge, to any person obtaining a copy of 
 The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+# Version 0.3.0
+- Fix for Linux pyexpat errors
+- Fix default JSON.tmLanguage path
 
 # Version 0.2.0
 - Add commands to save converted file with specified extension

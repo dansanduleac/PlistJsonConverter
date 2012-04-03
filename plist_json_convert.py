@@ -14,6 +14,14 @@ from os.path import join, exists, splitext, basename
 from plistlib import readPlist, writePlistToString
 import codecs
 
+PACKAGE_SETTINGS = "plist_json_convert.sublime-settings"
+
+if sublime.platform() == "linux":
+    # Try and load Linux Python2.6 lib.  Default path is for Ubuntu.
+    linux_lib = sublime.load_settings(PACKAGE_SETTINGS).get("linux_python2.6_lib", "/usr/lib/python2.6/lib-dynload")
+    if not linux_lib in sys.path and exists(linux_lib):
+        sys.path.append(linux_lib)
+
 lib = join(sublime.packages_path(), 'PlistJsonConverter')
 if not lib in sys.path:
     sys.path.append(lib)
@@ -123,7 +131,7 @@ class LanguageConverter(sublime_plugin.TextCommand):
 class PlistToJsonCommand(LanguageConverter):
     lang = "json_language"
     default_lang = "Packages/Javascript/JSON.tmLanguage"
-    settings = "plist_json_convert.sublime-settings"
+    settings = PACKAGE_SETTINGS
 
     def get_output_file(self, filename):
         name = None
@@ -174,7 +182,7 @@ class PlistToJsonCommand(LanguageConverter):
 class JsonToPlistCommand(LanguageConverter):
     lang = "plist_language"
     default_lang = "Packages/XML/XML.tmLanguage"
-    settings = "plist_json_convert.sublime-settings"
+    settings = PACKAGE_SETTINGS
 
     def get_output_file(self, filename):
         name = None

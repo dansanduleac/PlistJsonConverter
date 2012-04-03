@@ -22,5 +22,10 @@
         {"plist": "tmLanguage", "json": "tmLanguage.JSON"},
         {"plist": "tmPreferences", "json": "tmPreferences.JSON"},
         {"plist": "tmTheme", "json": "tmTheme.JSON"}
-    ]
+    ],
+
+    // Default path is for Ubuntu.
+    // By default Ubuntu only has a minimal 2.6 Python install; you must have a full install
+    // You can run sudo apt-get install python2.6 to get a full install
+    "linux_python2.6_lib": "/usr/lib/python2.6/lib-dynload"
 }
