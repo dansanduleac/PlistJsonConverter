@@ -1,5 +1,5 @@
 {
-    "json_language": "Packages/Javascript/JSON.tmLanguage",
+    "json_language": "Packages/JavaScript/JSON.tmLanguage",
     "plist_language": "Packages/XML/XML.tmLanguage",
 
     // When converting buffer open conversion in new buffer
