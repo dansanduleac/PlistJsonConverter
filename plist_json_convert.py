@@ -11,7 +11,6 @@ import StringIO
 import sys
 import re
 from os.path import join, exists, splitext, basename
-from plistlib import readPlist, writePlistToString
 import codecs
 
 PACKAGE_SETTINGS = "plist_json_convert.sublime-settings"
@@ -21,6 +20,7 @@ if sublime.platform() == "linux":
     linux_lib = sublime.load_settings(PACKAGE_SETTINGS).get("linux_python2.6_lib", "/usr/lib/python2.6/lib-dynload")
     if not linux_lib in sys.path and exists(linux_lib):
         sys.path.append(linux_lib)
+from plistlib import readPlist, writePlistToString
 
 lib = join(sublime.packages_path(), 'PlistJsonConverter')
 if not lib in sys.path:
