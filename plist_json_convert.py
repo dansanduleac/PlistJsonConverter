@@ -10,7 +10,7 @@ import json
 import StringIO
 import sys
 import re
-from os.path import join, exists, splitext, basename
+from os.path import exists, splitext, basename
 import codecs
 
 PACKAGE_SETTINGS = "plist_json_convert.sublime-settings"
@@ -22,10 +22,7 @@ if sublime.platform() == "linux":
         sys.path.append(linux_lib)
 from plistlib import readPlist, writePlistToString
 
-lib = join(sublime.packages_path(), 'PlistJsonConverter')
-if not lib in sys.path:
-    sys.path.append(lib)
-from lib.file_strip.json import sanitize_json
+from PlistJsonConverterLib.file_strip.json import sanitize_json
 
 ERRORS = {
     "view2plist": "Could not read view buffer as PLIST!\nPlease see console for more info.",
