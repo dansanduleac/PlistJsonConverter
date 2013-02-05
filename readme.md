@@ -36,13 +36,7 @@ Allows the selection of a given ST2 language file to be used for the converted b
 Allows the selection of a given ST2 language file to be used for the converted buffer or file.
 
 # Linux Issues
-I have provided a fix for Ubuntu.  Ubuntu requires a full install of Python2.6, but it only comes with a minimal install by default.  You can enter the command below in your linux terminal to get the full install.
-
-```sudo apt-get install python2.6```
-
-I have provided the Python lib path in the settings file so it may be adapted for other distros in needed.
-
-```"linux_python2.6_lib": "/usr/lib/python2.6/lib-dynload"```
+Hopefully none.
 
 # License
 
