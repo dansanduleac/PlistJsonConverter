@@ -84,7 +84,7 @@ class LanguageConverter(sublime_plugin.TextCommand):
             self.output_view.replace(
                 edit,
                 sublime.Region(0, self.view.size()),
-                self.output.decode('utf-8')
+                self.output
             )
         except Exception as e:
             errors = True
@@ -219,7 +219,7 @@ class JsonToPlistCommand(LanguageConverter):
         errors = False
         try:
             # Convert Python dict to PLIST buffer
-            self.output = writePlistToBytes(self.json)
+            self.output = writePlistToBytes(self.json).decode('utf-8')
         except Exception as e:
             errors = True
             error_msg(ERRORS["json2plist"], e)
