@@ -7,7 +7,7 @@ Copyright (c) 2012 Isaac Muse <isaacmuse@gmail.com>
 import sublime
 import sublime_plugin
 import json
-import StringIO
+from io import StringIO
 import sys
 import re
 from os.path import exists, splitext, basename
@@ -15,14 +15,14 @@ import codecs
 
 PACKAGE_SETTINGS = "plist_json_convert.sublime-settings"
 
-if sublime.platform() == "linux":
-    # Try and load Linux Python2.6 lib.  Default path is for Ubuntu.
-    linux_lib = sublime.load_settings(PACKAGE_SETTINGS).get("linux_python2.6_lib", "/usr/lib/python2.6/lib-dynload")
-    if not linux_lib in sys.path and exists(linux_lib):
-        sys.path.append(linux_lib)
-from plistlib import readPlist, writePlistToString
+# if sublime.platform() == "linux":
+#     # Try and load Linux Python2.6 lib.  Default path is for Ubuntu.
+#     linux_lib = sublime.load_settings(PACKAGE_SETTINGS).get("linux_python2.6_lib", "/usr/lib/python2.6/lib-dynload")
+#     if not linux_lib in sys.path and exists(linux_lib):
+#         sys.path.append(linux_lib)
+from plistlib import readPlistFromBytes, writePlistToBytes
 
-from PlistJsonConverterLib.file_strip.json import sanitize_json
+from PlistJsonConverter.PlistJsonConverterLib.file_strip.json import sanitize_json
 
 ERRORS = {
     "view2plist": "Could not read view buffer as PLIST!\nPlease see console for more info.",
@@ -37,8 +37,8 @@ ERRORS = {
 def error_msg(msg, e=None):
     sublime.error_message(msg)
     if e != None:
-        print "Plist Json Converter Exception:"
-        print e
+        print("Plist Json Converter Exception:")
+        print(e)
 
 
 class LanguageConverter(sublime_plugin.TextCommand):
@@ -64,7 +64,7 @@ class LanguageConverter(sublime_plugin.TextCommand):
                 with codecs.open(save_filename, "w", "utf-8") as f:
                     f.write(self.output)
                 self.output_view = self.view.window().open_file(save_filename)
-            except Exception, e:
+            except Exception as e:
                 errors = True
                 error_msg(ERRORS["filewrite"], e)
             if not errors:
@@ -84,9 +84,9 @@ class LanguageConverter(sublime_plugin.TextCommand):
             self.output_view.replace(
                 edit,
                 sublime.Region(0, self.view.size()),
-                self.output
+                self.output.decode('utf-8')
             )
-        except Exception, e:
+        except Exception as e:
             errors = True
             error_msg(ERRORS["bufferwrite"], e)
 
@@ -152,14 +152,12 @@ class PlistToJsonCommand(LanguageConverter):
             # Ensure view buffer is in a UTF8 format.
             # Wrap string in a file structure so it can be accessed by readPlist
             # Read view buffer as PLIST and dump to Python dict
-            self.plist = readPlist(
-                StringIO.StringIO(
-                    self.view.substr(
-                        sublime.Region(0, self.view.size())
-                    ).encode('utf8')
-                )
+            self.plist = readPlistFromBytes(
+                self.view.substr(
+                    sublime.Region(0, self.view.size())
+                ).encode('utf8')
             )
-        except Exception, e:
+        except Exception as e:
             errors = True
             error_msg(ERRORS["view2plist"], e)
         return errors
@@ -169,8 +167,8 @@ class PlistToJsonCommand(LanguageConverter):
         try:
             if not errors:
                 # Convert Python dict to JSON buffer.
-                self.output = json.dumps(self.plist, sort_keys=True, indent=4, separators=(',', ': ')).decode('raw_unicode_escape')
-        except Exception, e:
+                self.output = json.dumps(self.plist, sort_keys=True, indent=4, separators=(',', ': ')).encode('utf-8').decode('raw_unicode_escape')
+        except Exception as e:
             errors = True
             error_msg(ERRORS["plist2json"], e)
         return errors
@@ -212,7 +210,7 @@ class JsonToPlistCommand(LanguageConverter):
                 )
             )
 
-        except Exception, e:
+        except Exception as e:
             errors = True
             error_msg(ERRORS["view2json"], e)
         return errors
@@ -221,8 +219,8 @@ class JsonToPlistCommand(LanguageConverter):
         errors = False
         try:
             # Convert Python dict to PLIST buffer
-            self.output = writePlistToString(self.json).decode('utf8')
-        except Exception, e:
+            self.output = writePlistToBytes(self.json)
+        except Exception as e:
             errors = True
             error_msg(ERRORS["json2plist"], e)
         return errors
