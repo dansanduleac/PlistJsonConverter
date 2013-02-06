@@ -35,9 +35,6 @@ Allows the selection of a given ST2 language file to be used for the converted b
 ## plist_language
 Allows the selection of a given ST2 language file to be used for the converted buffer or file.
 
-# Linux Issues
-Hopefully none.
-
 # License
 
 Plist Json Converter is released under the MIT license.
@@ -49,6 +46,8 @@ Permission is hereby granted, free of charge, to any person obtaining a copy of 
 The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+# Version 0.4.0
+- Support ST3
 
 # Version 0.3.0
 - Fix for Linux pyexpat errors

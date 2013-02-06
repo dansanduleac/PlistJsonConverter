@@ -1,8 +1,8 @@
-'''
+"""
 Plist Json Converter
 Licensed under MIT
 Copyright (c) 2012 Isaac Muse <isaacmuse@gmail.com>
-'''
+"""
 
 import sublime
 import sublime_plugin
@@ -12,18 +12,10 @@ import sys
 import re
 from os.path import exists, splitext, basename
 import codecs
-
-PACKAGE_SETTINGS = "plist_json_convert.sublime-settings"
-
-# if sublime.platform() == "linux":
-#     # Try and load Linux Python2.6 lib.  Default path is for Ubuntu.
-#     linux_lib = sublime.load_settings(PACKAGE_SETTINGS).get("linux_python2.6_lib", "/usr/lib/python2.6/lib-dynload")
-#     if not linux_lib in sys.path and exists(linux_lib):
-#         sys.path.append(linux_lib)
 from plistlib import readPlistFromBytes, writePlistToBytes
-
 from PlistJsonConverter.PlistJsonConverterLib.file_strip.json import sanitize_json
 
+PACKAGE_SETTINGS = "plist_json_convert.sublime-settings"
 ERRORS = {
     "view2plist": "Could not read view buffer as PLIST!\nPlease see console for more info.",
     "plist2json": "Could not convert PLIST to JSON!\nPlease see console for more info.",
