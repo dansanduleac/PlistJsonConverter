@@ -22,5 +22,15 @@
         {"plist": "tmLanguage", "json": "tmLanguage.JSON"},
         {"plist": "tmPreferences", "json": "tmPreferences.JSON"},
         {"plist": "tmTheme", "json": "tmTheme.JSON"}
-    ]
+    ],
+
+    // Extensions to auto convert from json to plist on save
+    // Extensions are case insensitive
+    // Example:
+    // "json_to_plist_on_save": [
+    //     "tmLanguage.JSON",
+    //     "tmPreferences.JSON",
+    //     "tmTheme.JSON"
+    // ]
+    "json_to_plist_on_save": []
 }
