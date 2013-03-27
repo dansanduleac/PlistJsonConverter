@@ -5,7 +5,7 @@ Copyright (c) 2012 Isaac Muse <isaacmuse@gmail.com>
 '''
 
 import re
-from comments import Comments
+from .comments import Comments
 
 
 def strip_dangling_commas(text, preserve_lines=False):
