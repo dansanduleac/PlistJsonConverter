@@ -7,12 +7,21 @@ Copyright (c) 2012 Isaac Muse <isaacmuse@gmail.com>
 import sublime
 import sublime_plugin
 import json
-import io
 import sys
 import re
 from os.path import exists, splitext, basename
 import codecs
 import traceback
+
+python3 = sys.version_info[0] == 3
+
+if python3:
+    from io import BytesIO
+else:
+    # In Python2, bytes are represented as str, so StringIO can be
+    # used when a IO for bytes is needed.
+    from StringIO import StringIO as BytesIO
+
 
 PACKAGE_SETTINGS = "plist_json_convert.sublime-settings"
 
@@ -21,9 +30,14 @@ if sublime.platform() == "linux":
     linux_lib = sublime.load_settings(PACKAGE_SETTINGS).get("linux_python2.6_lib", "/usr/lib/python2.6/lib-dynload")
     if not linux_lib in sys.path and exists(linux_lib):
         sys.path.append(linux_lib)
-from plistlib import readPlist, writePlistToBytes
+from plistlib import readPlist
+if python3:
+    from plistlib import writePlistToBytes
+    from .PlistJsonConverterLib.file_strip.json import sanitize_json
+else:
+    from plistlib import writePlistToString as writePlistToBytes
+    from PlistJsonConverterLib.file_strip.json import sanitize_json
 
-from .PlistJsonConverterLib.file_strip.json import sanitize_json
 
 ERRORS = {
     "view2plist": "Could not read view buffer as PLIST!\nPlease see console for more info.",
@@ -155,7 +169,7 @@ class PlistToJsonCommand(LanguageConverter):
             # Wrap string in a file structure so it can be accessed by readPlist
             # Read view buffer as PLIST and dump to Python dict 
             self.plist = readPlist(
-                io.BytesIO(
+                BytesIO(
                     self.view.substr(
                         sublime.Region(0, self.view.size())
                     ).encode('utf8')
