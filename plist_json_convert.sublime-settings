@@ -24,6 +24,16 @@
         {"plist": "tmTheme", "json": "tmTheme.JSON"}
     ],
 
+    // Extensions to auto convert from json to plist on save
+    // Extensions are case insensitive
+    // Example:
+    // "json_to_plist_on_save": [
+    //     "tmLanguage.JSON",
+    //     "tmPreferences.JSON",
+    //     "tmTheme.JSON"
+    // ]
+    "json_to_plist_on_save": [],
+
     // Default path is for Ubuntu.
     // By default Ubuntu only has a minimal 2.6 Python install; you must have a full install
     // You can run sudo apt-get install python2.6 to get a full install
